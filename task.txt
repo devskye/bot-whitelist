@@ -1,0 +1,16 @@
+
+bot whitelist:
+- criar schema do banco de dados [x]
+- criar requisições pro banco de dados:
+   [] createdWhitelist
+   [] addQuestion
+   []getQuestions
+   [] deleteQuestion
+   [] editQuestion
+   [] removeQuestion
+   []getAnswersByUser
+   []getQuestionById
+   --------------------
+   função startWhitelistv - 
+
+ 

@@ -1,0 +1,44 @@
+{
+  "colors": {
+    "default": "#2B2D31",
+
+    "primary": "#3b82f6",
+    "secondary": "#4f545c",
+    "success": "#22c55e",
+    "danger": "#ED4245",
+    "warning": "#fbbd23",
+
+    "azoxo": "#5865F2",
+    "green": "#57F287",
+    "yellow": "#FEE75C",
+    "fuchsia": "#EB459E",
+    "magic": "#c026d3",
+
+    "developer": "#3e70dd",
+    "balance": "#45ddc0",
+    "brilliance": "#f07d5f",
+    "nitro": "#ff6bfa",
+    "bravery": "#9c84ef"
+  },
+ "Setting":{
+    "BOT-ID": "1219090283195662466",
+    "BOT-CONNECTION": {
+        "host": "181.215.236.252",
+        "port": 22003,
+        "user": "BotDiscordCPX2024Oficial",
+        "password": "32723428Adssa83474369106347458852"
+    },
+
+    "whitelist": {
+        "WHITELIST-CATEGORY": "971632855530766376",
+        "WHITELIST-CHANNEL": "1219092131281375292",
+        "PREWHITELIST-ROLE": "1081769694140305429",
+        "ALLOWLIST-ROLE": "1238909001744252979",
+        "WHITELIST-ROLE": "1239273328494116950",
+        "LOGS-CHANNEL": "1219091519714361364",
+        "STATE-CHANNEL": "1218054868321701918",
+        "STAF-ROLE":"1081770651284688957"
+    }
+}
+
+}
