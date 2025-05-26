@@ -75,7 +75,7 @@ createCommand({
           const questionText = options.getString("question", true);
           const result = await controller.addQuestion(questionText);
        
-
+ 
           await interaction.reply(
             res.success(" ## ✅ Pergunta criada com sucesso!", {
               fields: [
@@ -118,6 +118,7 @@ createCommand({
         case "remove": {
           const id = options.getInteger("id", true);
           await controller.deleteQuestion(id)
+          
 
           await interaction.reply(
             res.success("Pergunta removida com sucesso:", {

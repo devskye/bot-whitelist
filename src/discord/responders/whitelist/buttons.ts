@@ -1,10 +1,6 @@
 import { createResponder, ResponderType } from "#base";
-import { createLinkButton, createRow } from "@magicyan/discord";
-import {
-
-  GuildTextBasedChannel,
- 
-} from "discord.js";
+import { createLinkButton, createModalFields, createRow } from "@magicyan/discord";
+import { TextInputStyle } from "discord.js";
 
 
 createResponder({
@@ -20,7 +16,7 @@ createResponder({
       case "start": {
         try {
             const channel = await controller.createWhitelistChannel(interaction);
-            if (!channel) return; // já tratou o reply dentro da função
+            if (!channel) return; 
     
             const row = createRow(
                 createLinkButton({ url:channel.url, label: "Acessar Ticket" })
@@ -42,6 +38,20 @@ createResponder({
         }
         return;
     }
+    case"allow":{
+        interaction.showModal({
+            customId: "modal/allowlist",
+            title: "Liberar",
+            components: createModalFields({
+              token:{
+                    label: "Código",
+                    style: TextInputStyle.Short,
+                    required: true,
+                }, 
+            })
+        });
+    }
+   
     }
   },
 });

@@ -1,6 +1,8 @@
 
+
 import { bootstrap } from "#base";
 import { WhiteListManager } from "core/WhiteList.js";
+import mtaservice from "services/mta.client.js";
 
 
 
@@ -8,7 +10,8 @@ import { WhiteListManager } from "core/WhiteList.js";
 await bootstrap({
   meta: import.meta,
   whenReady(client) {
-    const manager = new WhiteListManager();
+  
+    const manager = new WhiteListManager(mtaservice);
   
     client.WhiteListManager = manager;
   },

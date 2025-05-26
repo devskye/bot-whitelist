@@ -122,4 +122,14 @@ export class DiscordService {
     static getDenialMessage(userid: string): string {
         return `❌ <@${userid}>, sua WHITELIST foi **REPROVADA** em nosso servidor! Preste mais atenção nas perguntas e na elaboração da sua próxima WHITELIST.`;
     }
+
+
+    static async setUserNickname(user: any, nickname: string): Promise<void> {
+        try {
+          await user.setNickname(nickname);
+        } catch (error) {
+          console.error("Bot sem permissões para setar nickname:", error);
+          
+        }
+      }
 }

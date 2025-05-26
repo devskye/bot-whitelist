@@ -1,14 +1,11 @@
-/*  import { createCommand } from "#base";
+import { createCommand } from "#base";
 import { res } from "#functions";
-import { settings } from "#settings";
 import { findMember } from "@magicyan/discord";
 import {
   ApplicationCommandOptionType,
   ApplicationCommandType,
   codeBlock,
 } from "discord.js";
-import Settings from "fast-glob/out/settings.js";
-import { fetchGuildMember, safeModifyRoles } from "functions/utils/discord.js";
 
 createCommand({
   name: "whitelist",
@@ -90,9 +87,8 @@ createCommand({
 
   async run(interaction) {
     const { options, client, guild } = interaction;
-    const manager = client.whiteListController; // variável para o whitelist manager
+    const manager = client.WhiteListManager;
     const subcommand = options.getSubcommand();
-    const user = options.getUser("user", true);
 
     try {
       switch (subcommand) {
@@ -101,7 +97,7 @@ createCommand({
           const user = options.getUser("user", true);
           const member = guild.members.cache.get(user.id);
 
-          await manager.setWhitelist(interaction, member, id);
+          await manager.setMTAWhitelist(interaction, member, id.toString());
 
           await interaction.reply(
             res.success(`Usuário ${user.tag} setado na whitelist com ID ${id}.`)
@@ -112,7 +108,7 @@ createCommand({
         case "remove": {
           const id = options.getInteger("id", true);
 
-          await manager.removeWhitelist(interaction, id);
+          await manager.removeMTAWhitelist(interaction, id.toString());
 
           await interaction.reply(
             res.success(`Whitelist com ID ${id} removida.`)
@@ -122,9 +118,7 @@ createCommand({
 
         case "fix": {
           const user = options.getUser("user", true);
-
           await manager.deleteWhitelist(interaction, user);
-
           await interaction.reply(
             res.success(`Whitelist do usuário ${user.tag} apagada.`)
           );
@@ -133,9 +127,7 @@ createCommand({
 
         case "deny": {
           const user = options.getUser("user", true);
-
           await manager.denyManualWhitelist(interaction, user);
-
           await interaction.reply(
             res.success(`Whitelist do usuário ${user.tag} reprovada.`)
           );
@@ -143,25 +135,14 @@ createCommand({
         }
 
         case "approve": {
+          const user = options.getUser("user", true);
           const member = findMember(guild).byId(user.id);
 
           if (!member) {
             await interaction.reply(res.danger("❌ Membro não encontrado."));
             return;
           }
-          //buscar os cargos na guild com findRole
-          const result = await safeModifyRoles(
-            member,
-            settings.Setting.whitelist["PREWHITELIST-ROLE"],
-            settings.Setting.whitelist["ALLOWLIST-ROLE"]
-          );
-
-          if (!result.success) {
-            await interaction.reply(res.danger(`❌ ${result.error}`));
-            return;
-          }
-
-          
+          await manager.acceptManualWhitelist(interaction, member);
           await interaction.reply(
             res.success(`Whitelist do usuário ${user.tag} aprovada.`)
           );
@@ -180,4 +161,3 @@ createCommand({
     }
   },
 });
- */

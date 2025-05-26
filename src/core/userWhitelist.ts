@@ -14,10 +14,10 @@ export class UserWhitelist {
     }
 
     async firstQuestion(content: string, questionId: number): Promise<void> {
-        console.log('[SAVE] Salvando primeira resposta:', content);
+        
         try {
             await this.repo.updateFirstQuestion(this.data.id, content, questionId);
-            this.data = { ...this.data, lastquestion: 0, started: true }; 
+             this.data = { ...this.data, lastquestion:0 , started: true }; 
             console.log(`[WHITELIST CONTROLLER] ${this.data.userId} started the whitelist!`);
         } catch (err) {
             console.error(`[WHITELIST CONTROLLER] Error starting whitelist for ${this.data.userId}`, err);
