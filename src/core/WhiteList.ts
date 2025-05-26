@@ -6,6 +6,7 @@ import {
   ModalSubmitInteraction,
   PermissionFlagsBits,
   TextBasedChannel,
+  User,
 } from "discord.js";
 import { WhitelistService } from "./services/WhitelistService.js";
 import { Question } from "@prisma/client";
@@ -14,6 +15,8 @@ import { settings } from "#settings";
 import { DiscordService } from "./services/DiscordService.js";
 import { FileService } from "./services/FileService.js";
 import { MTAService } from "./services/MtaService.js";
+import { AllowTokenResult, WhitelistResult } from "types/WhitilistTypes.js";
+import { res } from "#functions";
 
 export class WhiteListManager {
   private whitelistService: WhitelistService;
@@ -664,34 +667,28 @@ export class WhiteListManager {
 
   //MTA
 
-  public async setMTAWhitelist(interaction: any, user: any, id: string): Promise<void> {
+  public async setMTAWhitelist(  user:any, id: number): Promise<WhitelistResult> {
     if (!this.mtaService) {
-      await interaction.reply({
-        content: "Serviço MTA não está disponível",
-        ephemeral: true
-      });
-      return;
+      return { success: false, message: "Servidor MTA não configurado." };
+      
     }
 
     try {
-      const nickname = await this.mtaService.setWhitelist(user.id, id);
+      const response = await this.mtaService.setWhitelist(user.id, id);
+
+      if(response.startsWith("ERR:")){
+      return { success: false, message: response }
+
+      }else{
+        await this.processMTAWhitelistSet(user, response);
+        return { success: true, message: "Whitelist setada com sucesso!" };
+      }
       
-      await this.processMTAWhitelistSet(user, nickname);
-      
-      await interaction.reply({
-        content: "Jogador setado na whitelist com sucesso!",
-        ephemeral: true
-      });
 
     } catch (error) {
       console.error("Error in setMTAWhitelist:", error);
+      return { success: false, message: "Erro ao processar a whitelist.", };
       
-      const errorMessage = error instanceof Error ? error.message : "Erro ao setar whitelist";
-      
-      await interaction.reply({
-        content: errorMessage,
-        ephemeral: true
-      });
     }
   }
   public async removeMTAWhitelist(interaction: any, id: string): Promise<void> {
@@ -784,43 +781,29 @@ export class WhiteListManager {
     }
   }
 
-  public  async allowToken(interaction:ModalSubmitInteraction,code:string): Promise<void> {
-    if (!this.mtaService) {
-      await interaction.reply({
-        content: "Serviço MTA não está disponível",
-        ephemeral: true
-      });
-      return;
-    }
-    const user = interaction.user
-    const userId = user.id
+  public async allowToken(user:User, code: string): Promise<AllowTokenResult> {
  
-    try {
-     const response = await this.mtaService.aprovePlayer(userId, code);
-      if(!response ){
-        await interaction.reply({
-          content: "Código inválido",
-          ephemeral: true
-        });
-        return;
-      }
-       await this.processMTAWhitelistSet(user,response)
-       
-        interaction.reply({
-        content: "Jogador setado na whitelist com sucesso!",
-        ephemeral: true
-        
-    });
-   
-    } catch (error) {
-      console.error("Error processing MTA whitelist set:", error); 
-      await interaction.reply({
-        content: "Erro ao setar whitelist",
-        ephemeral: true
-      });
-      return;
+  
+
+    if (!this.mtaService) {
+        return { success: false, message: "Serviço MTA não está disponível." };
     }
 
+    try {
+        const response = await this.mtaService.aprovePlayer(user.id, code);
+        if (!response) {
+            return { success: false, message: "Código de acesso inválido. Por favor, verifique e tente novamente." };
+        }
+
+ 
+        await this.processMTAWhitelistSet(user, response);
+        return { success: true, message: "Token liberado com sucesso! Sua whitelist foi atualizada." };
+
+    } catch (error) {
+        console.error("Erro ao processar a whitelist MTA:", error);
+        return { success: false, message: "Ocorreu um erro interno ao tentar liberar o token. Tente novamente mais tarde." };
+    }
 }
+
 
 }

@@ -24,10 +24,10 @@
  "Setting":{
     "BOT-ID": "1219090283195662466",
     "BOT-CONNECTION": {
-        "host": "181.215.236.252",
-        "port": 22003,
-        "user": "BotDiscordCPX2024Oficial",
-        "password": "32723428Adssa83474369106347458852"
+        "host": "198.1.195.239",
+        "port": 25125,
+        "user": "BotDiscordV2",
+        "password": "93823843843826086397"
     },
 
     "whitelist": {

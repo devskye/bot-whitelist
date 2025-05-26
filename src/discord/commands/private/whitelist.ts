@@ -86,7 +86,7 @@ createCommand({
   ],
 
   async run(interaction) {
-    const { options, client, guild } = interaction;
+    const { options, client, guild} = interaction;
     const manager = client.WhiteListManager;
     const subcommand = options.getSubcommand();
 
@@ -95,14 +95,17 @@ createCommand({
         case "set": {
           const id = options.getInteger("id", true);
           const user = options.getUser("user", true);
-          const member = guild.members.cache.get(user.id);
+          
+         console.log("user:",user,"id",id)
+         const response =  await manager.setMTAWhitelist(user,id);
+         
+         if(!response.success){
+           interaction.reply(res.danger(response.message));
+           return;
+         }
 
-          await manager.setMTAWhitelist(interaction, member, id.toString());
-
-          await interaction.reply(
-            res.success(`Usuário ${user.tag} setado na whitelist com ID ${id}.`)
-          );
-          return;
+         interaction.reply(res.success(`Usuário ${user.tag} setado na whitelist com ID ${id}.`));
+         return;
         }
 
         case "remove": {
