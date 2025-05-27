@@ -8,30 +8,19 @@ export class MTAService {
   async setWhitelist(userId: string, id: number): Promise<string> {
     try {
       const response = await this.mtaservice.call("cpx_discord", "setWhitelist", userId, id);
-      
-    /*   if (response.startsWith("ERR:")) {
-        throw new Error(response);
-      } */
-      console.log("Response from MTA:", response);
       return response;
     } catch (error) {
       console.error("Error setting whitelist in MTA:", error);
       return "Erro ao processar a whitelist.";
     }
   }
-
-  async removeWhitelist(id: string): Promise<string> {
+  async removeWhitelist(id: number): Promise<string> {
     try {
       const response = await this.mtaservice.call("cpx_discord", "removeWhitelist", id);
-      
-      if (!response || response.startsWith("ERR:")) {
-        throw new Error(response || "Erro ao remover whitelist");
-      }
-      
       return response;
     } catch (error) {
       console.error("Error removing whitelist from MTA:", error);
-      throw error;
+      return "Erro ao remover whitelist.";
     }
   }
   async aprovePlayer ( userId: string, code: string){

@@ -1,4 +1,4 @@
-import { question } from 'menus/whitelist/question.js';
+import { question } from 'ui/question.js';
 import { createCommand } from "#base";
 import { res } from "#functions";
 import {

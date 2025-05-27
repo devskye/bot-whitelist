@@ -11,9 +11,9 @@ createResponder({
     const { client} = interaction;
     const controller = client.WhiteListManager
   
-
+console.log("actionButton",action)
     switch (action) {
-      case "start": {
+      case "createchannel": {
         try {
             const channel = await controller.createWhitelistChannel(interaction);
             if (!channel) return; 
@@ -51,7 +51,12 @@ createResponder({
             })
         });
     }
-   
+   case"deny":{
+    client.WhiteListManager.denyWhitelist(interaction)
+   }
+   case"accept":{
+    client.WhiteListManager.acceptWhitelist(interaction)
     }
-  },
+  }
+  }
 });

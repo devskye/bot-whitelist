@@ -3,7 +3,6 @@ import {
   ChannelType,
   ComponentType,
   GuildTextBasedChannel,
-  ModalSubmitInteraction,
   PermissionFlagsBits,
   TextBasedChannel,
   User,
@@ -16,7 +15,8 @@ import { DiscordService } from "./services/DiscordService.js";
 import { FileService } from "./services/FileService.js";
 import { MTAService } from "./services/MtaService.js";
 import { AllowTokenResult, WhitelistResult } from "types/WhitilistTypes.js";
-import { res } from "#functions";
+import { panelControlWhitelist } from "ui/panelControlWhitelist.js";
+import { startWhitelistPanel } from "ui/index.js";
 
 export class WhiteListManager {
   private whitelistService: WhitelistService;
@@ -90,23 +90,22 @@ export class WhiteListManager {
     });
   }
   private async defaultMessage(interaction: any, receivedchannel: any) {
-    const embed = DiscordService.createWelcomeEmbed(
+   /*  const embed = DiscordService.createWelcomeEmbed(
       interaction.member.user.displayAvatarURL()
     );
-    const row = DiscordService.createStartButton();
+    const row = DiscordService.createStartButton(); */
+    const messagePayload = startWhitelistPanel()
 
     const whitelist = await this.getWhitelistByUserId(interaction.user.id); // usa método com cache local
 
-    const message = await receivedchannel.send({
-      embeds: [embed],
-      components: [row],
-    });
+    const message = await receivedchannel.send(messagePayload);
     const collector = message.channel.createMessageComponentCollector({
       componentType: ComponentType.Button,
       time: 300000,
     });
 
     collector.on("collect", async (button: ButtonInteraction) => {
+      console.log("Button clicked:", button.customId);
       if (button.customId === "start") {
         collector.stop();
         await this.startWhitelist(button, receivedchannel);
@@ -141,7 +140,7 @@ export class WhiteListManager {
         await interaction.guild.channels.create({
           name: `${interaction.user.username}-whitelist`,
           type: ChannelType.GuildText,
-          parent: settings.Setting.whitelist["WHITELIST-CATEGORY"],
+          parent: settings.whitelist["WHITELIST-CATEGORY"],
           permissionOverwrites: [
             {
               id: interaction.guild.roles.everyone,
@@ -261,7 +260,7 @@ export class WhiteListManager {
    
       await DiscordService.addRoleToUser(
         interaction.member,
-        settings.Setting.whitelist["PREWHITELIST-ROLE"]
+        settings.whitelist["PREWHITELIST-ROLE"]
       );
 
       await interaction.channel.send({
@@ -296,7 +295,7 @@ export class WhiteListManager {
       await this.whitelistService.deleteAnswersByWhitelistId(whitelist.data.id);
 
       // Prepare Discord message
-      const file = FileService.readWhitelistFile(userId);
+      /* const file = FileService.readWhitelistFile(userId);
       const attachment = DiscordService.createFileAttachment(
         file,
         `${userId}.txt`
@@ -308,17 +307,19 @@ export class WhiteListManager {
       );
 
       const row = DiscordService.createActionRow();
-
+ */
       // Send to whitelist channel
+       const file = FileService.readWhitelistFile(userId);
       const whitelistChannel = await interaction.guild.channels.fetch(
-        settings.Setting.whitelist["WHITELIST-CHANNEL"]
+        settings.whitelist["WHITELIST-CHANNEL"]
       );
-
-      const message = await whitelistChannel.send({
+      const messagePayload = panelControlWhitelist(file, `${userId}.txt`, interaction.user.username);
+       const message =  await whitelistChannel.send(messagePayload);
+      /* const message = await whitelistChannel.send({
         embeds: [embed],
         components: [row],
         files: [attachment],
-      });
+      }); */
 
       // Update whitelist with message ID
       await this.whitelistService.updateWhitelist(whitelist.data.id, {
@@ -475,12 +476,12 @@ export class WhiteListManager {
 
       await DiscordService.removeRoleFromUser(
         member,
-      settings.Setting.whitelist["PREWHITELIST-ROLE"]
+      settings.whitelist["PREWHITELIST-ROLE"]
       );
 
       await DiscordService.addRoleToUser(
         member,
-      settings.Setting.whitelist["ALLOWLIST-ROLE"]
+      settings.whitelist["ALLOWLIST-ROLE"]
       );
 
       this.whitelists.delete(user.id);
@@ -494,7 +495,7 @@ export class WhiteListManager {
 
       await DiscordService.sendToChannel(
         interaction.guild,
-       settings.Setting.whitelist["LOGS-CHANNEL"],
+       settings.whitelist["LOGS-CHANNEL"],
         { embeds: [logEmbed] }
       );
 
@@ -502,7 +503,7 @@ export class WhiteListManager {
       const approvalMessage = DiscordService.getApprovalMessage(user.id);
       await DiscordService.sendToChannel(
         interaction.guild,
-       settings.Setting.whitelist["STATE-CHANNEL"],
+       settings.whitelist["STATE-CHANNEL"],
         { content: approvalMessage }
       );
 
@@ -522,7 +523,7 @@ export class WhiteListManager {
 
       await DiscordService.removeRoleFromUser(
         member,
-       settings.Setting.whitelist["PREWHITELIST-ROLE"]
+       settings.whitelist["PREWHITELIST-ROLE"]
       );
 
       // Send logs
@@ -534,7 +535,7 @@ export class WhiteListManager {
 
       await DiscordService.sendToChannel(
         interaction.guild,
-        settings.Setting.whitelist["LOGS-CHANNEL"],
+        settings.whitelist["LOGS-CHANNEL"],
         { embeds: [logEmbed] }
       );
 
@@ -542,7 +543,7 @@ export class WhiteListManager {
       const denialMessage = DiscordService.getDenialMessage(user.id);
       await DiscordService.sendToChannel(
         interaction.guild,
-       settings.Setting.whitelist["STATE-CHANNEL"],
+       settings.whitelist["STATE-CHANNEL"],
         { content: denialMessage }
       );
 
@@ -584,12 +585,12 @@ export class WhiteListManager {
 
       await DiscordService.removeRoleFromUser(
         user,
-        settings.Setting.whitelist["PREWHITELIST-ROLE"]
+        settings.whitelist["PREWHITELIST-ROLE"]
       );
 
       await DiscordService.addRoleToUser(
         user,
-        settings.Setting.whitelist["ALLOWLIST-ROLE"]
+        settings.whitelist["ALLOWLIST-ROLE"]
       );
 
       this.whitelists.delete(whitelist.data.userId);
@@ -607,7 +608,7 @@ export class WhiteListManager {
       );
       await DiscordService.sendToChannel(
         interaction.guild,
-        settings.Setting.whitelist["LOGS-CHANNEL"],
+        settings.whitelist["LOGS-CHANNEL"],
         { embeds: [logEmbed] }
       );
 
@@ -616,7 +617,7 @@ export class WhiteListManager {
       );
       await DiscordService.sendToChannel(
         interaction.guild,
-        settings.Setting.whitelist["STATE-CHANNEL"],
+        settings.whitelist["STATE-CHANNEL"],
         { content: approvalMsg }
       );
     } catch (err) {
@@ -649,7 +650,7 @@ export class WhiteListManager {
 
       await DiscordService.removeRoleFromUser(
         user,
-       settings.Setting.whitelist["PREWHITELIST-ROLE"]
+       settings.whitelist["PREWHITELIST-ROLE"]
       );
 
       // Delete whitelist from database
@@ -691,19 +692,20 @@ export class WhiteListManager {
       
     }
   }
-  public async removeMTAWhitelist(interaction: any, id: string): Promise<void> {
+  public async removeMTAWhitelist(id: number): Promise<WhitelistResult> {
     if (!this.mtaService) {
-      await interaction.reply({
-        content: "Serviço MTA não está disponível",
-        ephemeral: true
-      });
-      return;
+      return { success: false, message: "Servidor MTA não configurado." };
+      
     }
 
     try {
-      const discordUserId = await this.mtaService.removeWhitelist(id);
-      
-      const user = interaction.guild.members.cache.get(discordUserId);
+      const response = await this.mtaService.removeWhitelist(id);
+      if(response.startsWith("ERR:")){
+        return { success: false, message: response }
+      }
+        
+      return { success: true, message: "Whitelist removida com sucesso!" };
+    /*   const user = interaction.guild.members.cache.get(discordUserId);
       
       if (!user) {
         await interaction.reply({
@@ -719,16 +721,17 @@ export class WhiteListManager {
         content: "Jogador removido da whitelist com sucesso!",
         ephemeral: true
       });
-
+ */
     } catch (error) {
       console.error("Error in removeMTAWhitelist:", error);
+      return { success: false, message: "Erro ao remover a whitelist.", };
       
-      const errorMessage = error instanceof Error ? error.message : "Erro ao remover whitelist";
+      /* const errorMessage = error instanceof Error ? error.message : "Erro ao remover whitelist";
       
       await interaction.reply({
         content: errorMessage,
         ephemeral: true
-      });
+      }); */
     }
   }
   
@@ -751,12 +754,12 @@ export class WhiteListManager {
       // adicionar cargo whitelist
       await DiscordService.addRoleToUser(
         user,
-        settings.Setting.whitelist['WHITELIST-ROLE']
+        settings.whitelist['WHITELIST-ROLE']
       );
       //remover pre-whitiliste
       await DiscordService.removeRoleFromUser(
         user,
-        settings.Setting.whitelist["PREWHITELIST-ROLE"]
+        settings.whitelist["PREWHITELIST-ROLE"]
       );
     } catch (error) {
       console.error("Error processing MTA whitelist set:", error);  
@@ -769,7 +772,7 @@ export class WhiteListManager {
       // remove cargo whitelist
       await DiscordService.removeRoleFromUser(
         user,
-        settings.Setting.whitelist['WHITELIST-ROLE']
+        settings.whitelist['WHITELIST-ROLE']
       );
       
       // reseta pro nick original

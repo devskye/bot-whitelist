@@ -1,5 +1,5 @@
 import { createResponder, ResponderType } from "#base";
-import { res, res as responderRes } from '#functions'; // Renomeado para evitar conflito com 'res' da variável de resultado
+import { res} from '#functions';
 
 createResponder({
     customId: "modal/:arg",

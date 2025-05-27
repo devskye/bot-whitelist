@@ -1,7 +1,8 @@
+import { panelAllowlist } from 'ui/panelAllowlist.js';
 import { createCommand } from "#base";
 import { res } from "#functions";
 import { ApplicationCommandOptionType, ApplicationCommandType, ChannelType, codeBlock } from "discord.js";
-import { panelAllowlist } from "ui/panelAllowlist.js";
+
 import { panelCreateWhitelist } from "ui/panelCreateWhitelist.js";
 
 createCommand({

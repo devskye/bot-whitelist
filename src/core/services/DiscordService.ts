@@ -11,13 +11,13 @@ export class DiscordService {
 
     static createActionRow(acceptDisabled = false, denyDisabled = false): ActionRowBuilder<ButtonBuilder> {
         const accept = new ButtonBuilder()
-            .setCustomId('accept')
+            .setCustomId('whitelist/accept')
             .setLabel('Aceitar')
             .setStyle(ButtonStyle.Success)
             .setDisabled(acceptDisabled);
 
         const deny = new ButtonBuilder()
-            .setCustomId('deny')
+            .setCustomId('whitelist/deny')
             .setLabel('Negar')
             .setStyle(ButtonStyle.Danger)
             .setDisabled(denyDisabled);

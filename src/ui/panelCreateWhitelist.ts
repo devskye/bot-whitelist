@@ -1,28 +1,33 @@
+import { settings } from "#settings";
 import { createEmbed, createRow } from "@magicyan/discord";
 import { ButtonBuilder, ButtonStyle } from "discord.js";
 
 export const panelCreateWhitelist = ()=>{
     const embed = createEmbed({
       author:{
-        name:"CPX • Allowlist",
+        name:"CPX • Whitelist",
         iconURL:"https://i.imgur.com/FUGUdiA.gif"
       },
-        title: "ALLOWLIST ",
+        title: "WHITELIST ",
         description:
-          "*Clique no botão para iniciar o processo de allowlist*.\n\n" +
-          "> • Caso ocorra algum problema, contacte a **STAFF**\n" +
-          " > • Para obter seu ID, basta conectar no servidor usando a sala <#1119617693532835890> \n",
-        color: "Gold",
+          "**Para dar início e responder a nossa allowlist clique no botão abaixo.**",
+        color: settings.colors.cpx,
         thumbnail: "https://i.imgur.com/FUGUdiA.gif",
       }); 
       
       const row = createRow(
             new ButtonBuilder({
-               customId: "whitelist/start",
-               label: "Iniciar Whitelist",
-               emoji: "✅",
+               customId: "whitelist/createchannel",
+               label: "Criar canal",
                style: ButtonStyle.Secondary
              }),
+            new ButtonBuilder({
+               
+               label: "Ler as regras",
+               style: ButtonStyle.Link,
+               url: "https://discord.com/channels/1114353893120804934/1114353893120804934/1114353893120804934"
+             }),
+            
        
       );
       return {embeds:[embed],components:[row]}
